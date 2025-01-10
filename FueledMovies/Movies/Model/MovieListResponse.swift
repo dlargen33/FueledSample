@@ -13,12 +13,6 @@ struct MovieListResponse: Codable {
     let results: [Movie]
     let totalPages: Int
     let totalResults: Int
-
-    enum CodingKeys: String, CodingKey {
-        case page, results
-        case totalPages
-        case totalResults
-    }
 }
 
 // MARK: - Result
@@ -26,7 +20,7 @@ struct Movie: Codable, Identifiable, Hashable {
     let id: Int
     let adult: Bool
     let backdropPath: String
-    let genreIDS: [Int]
+    let genreIds: [Int]
     let originalLanguage: String
     let originalTitle: String
     let overview: String
@@ -37,19 +31,4 @@ struct Movie: Codable, Identifiable, Hashable {
     let video: Bool
     let voteAverage: Double
     let voteCount: Int
-
-    enum CodingKeys: String, CodingKey {
-        case adult
-        case backdropPath
-        case genreIDS
-        case id
-        case originalLanguage
-        case originalTitle
-        case overview, popularity
-        case posterPath
-        case releaseDate
-        case title, video
-        case voteAverage
-        case voteCount
-    }
 }

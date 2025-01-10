@@ -7,10 +7,10 @@
 
 import Foundation
 
-typealias EndpointProgress = (_ bytesWritten: Int64,
-                              _ totalBytesWritten: Int64,
-                              _ totalBytesExpectedToWrite: Int64,
-                              _ percentComplete: Double?) -> Void
+typealias AsyncSessionProgress = (_ bytesWritten: Int64,
+                                  _ totalBytesWritten: Int64,
+                                  _ totalBytesExpectedToWrite: Int64,
+                                  _ percentComplete: Double?) -> Void
 
 class AsyncSession: NSObject {
     
@@ -36,6 +36,8 @@ class AsyncSession: NSObject {
         var timeout: Double?
         var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior
         var allowsLongRunningTasks: Bool
+        var decodingStrategy: JSONDecoder.KeyDecodingStrategy
+        var apiKey: [String: String]?
         
         init(scheme: String,
              host: String,
@@ -45,7 +47,9 @@ class AsyncSession: NSObject {
              isWrittingDisabled: Bool?,
              timeout: Double?,
              queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default,
-             allowsLongRunningTasks: Bool = false) {
+             allowsLongRunningTasks: Bool = false,
+             decodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+             apiKey: [String: String]? = nil) {
             self.scheme = scheme
             self.host = host
             self.authorizationHeaderKey = authorizationHeaderKey
@@ -55,6 +59,8 @@ class AsyncSession: NSObject {
             self.timeout = timeout
             self.queryParameterPlusEncodingBehavior = queryParameterPlusEncodingBehavior
             self.allowsLongRunningTasks = allowsLongRunningTasks
+            self.decodingStrategy = decodingStrategy
+            self.apiKey = apiKey
         }
     }
     
@@ -66,7 +72,7 @@ class AsyncSession: NSObject {
     }()
     
     
-    var progressHandler: EndpointProgress?
+    var progressHandler: AsyncSessionProgress?
     var unauthorizedStatusCodes: [HTTPStatusCode] = [.unauthorized, .forbidden]
     var urlSessionConfiguration: URLSessionConfiguration
     
@@ -89,11 +95,16 @@ class AsyncSession: NSObject {
                               parameters: [String: Any]?,
                               dateFormatters: [DateFormatter]) async throws -> Output {
         
+        var allParams = parameters ?? [:]
+        if let apiKey = self.sessionConfiguration.apiKey {
+            allParams.merge(apiKey) { current, _ in current }
+        }
+        
         let request = try self.setupRequest(path: path,
                                             requestType: .get,
                                             responseType: .json,
                                             parameterType: parameterType,
-                                            parameters: parameters)
+                                            parameters: allParams)
         
         let (data, urlResponse)  = try await self.urlSession.data(for: request, delegate: self)
         
@@ -103,10 +114,48 @@ class AsyncSession: NSObject {
                                                      dateFormatters: dateFormatters)
         return result
     }
+    
+    func download (_ path: String,
+                   parameters: Any?,
+                   progress: AsyncSessionProgress?) async throws -> Data {
+        progressHandler = progress
+            
+        let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
+        let requestType = RequestType.get
+        let responseType = ResponseType.data
+        
+        let request = try self.setupRequest(path: path,
+                                            requestType: requestType,
+                                            responseType: responseType,
+                                            parameterType: parameterType,
+                                            parameters: nil)
+         
+        let (asyncBytes, urlResponse) = try await self.urlSession.bytes(for: request)
+        
+        let httpResponse = try validateResponse(urlResponse: urlResponse)
+        let expectedLength = (httpResponse.expectedContentLength)
+        var bytesWritten: Int64 = 0
+        var data = Data()
+        data.reserveCapacity(Int(expectedLength))
+
+        for try await byte in asyncBytes {
+            data.append(byte)
+            if let progress = self.progressHandler {
+                bytesWritten += 1
+                let percentComplete = Double(bytesWritten) / Double(expectedLength)
+                self.notifyProgress(progressHandler: progress,
+                                    bytesWritten: bytesWritten,
+                                    totalBytesExpectedToWrite: expectedLength,
+                                    percentComplete: percentComplete )
+            }
+        }
+
+        progressHandler = nil
+        return data
+    }
 }
 
 extension AsyncSession {
-    
     private func composedURL(_ path: String) -> URL? {
         // path may be a fully qualified URL string - check for that
         if let precomposed = URL(string: path) {
@@ -116,7 +165,7 @@ extension AsyncSession {
         }
         
         let urlString = sessionConfiguration.scheme + "://" + sessionConfiguration.host
-        guard let url = URL(string: urlString) else {return nil}
+        guard let url = URL(string: urlString) else { return nil }
         return url.appendingPathComponent(path)
     }
     
@@ -161,7 +210,7 @@ extension AsyncSession {
         
         if statusCode.responseType != .success {
             if unauthorizedStatusCodes.contains(statusCode) {
-                throw SessionError.unknownHTTPStatusCode
+                throw SessionError.unauthorized
             }
             //HttpStatusCode is an error, thus it can be thrown.
             throw statusCode
@@ -172,15 +221,29 @@ extension AsyncSession {
     
     private func handleResponse<Output: Decodable>(data: Data,
                                                    urlResponse: URLResponse,
-                                                   dateFormatters: [DateFormatter] )  throws -> Output {
+                                                   dateFormatters: [DateFormatter])  throws -> Output {
         try validateResponse(urlResponse: urlResponse)
         let response = Response(data: data, response: urlResponse)
         let decoded = try response.decoded(Output.self,
                                            dateFormatters: dateFormatters,
-                                           keyDecodingStrategy: .useDefaultKeys)
+                                           keyDecodingStrategy: sessionConfiguration.decodingStrategy)
             
         
         return decoded
+    }
+    
+    private func notifyProgress(progressHandler: AsyncSessionProgress,
+                                bytesWritten: Int64,
+                                totalBytesExpectedToWrite: Int64,
+                                percentComplete: Double) {
+    
+        guard let progressHandler = self.progressHandler else { return }
+        DispatchQueue.main.async {
+            progressHandler(bytesWritten,
+                            bytesWritten,
+                            totalBytesExpectedToWrite,
+                            percentComplete)
+        }
     }
 }
 
