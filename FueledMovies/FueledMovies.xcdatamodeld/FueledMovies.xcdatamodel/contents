@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="ConfigurationEntity" representedClassName="ConfigurationEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="changeKeys" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
+        <attribute name="changeKeys" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
         <relationship name="images" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ImageEntity"/>
     </entity>
     <entity name="ImageDataEntity" representedClassName="ImageDataEntity" syncable="YES" codeGenerationType="class">
@@ -10,13 +10,13 @@
         <attribute name="movieId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="ImageEntity" representedClassName="ImageEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="backdropSizes" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
+        <attribute name="backdropSizes" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
         <attribute name="baseUrl" optional="YES" attributeType="String"/>
-        <attribute name="logoSizes" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
-        <attribute name="posterSizes" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
-        <attribute name="profileSizes" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
+        <attribute name="logoSizes" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
+        <attribute name="posterSizes" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
+        <attribute name="profileSizes" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
         <attribute name="secureBaseUrl" optional="YES" attributeType="String"/>
-        <attribute name="stillSizes" optional="YES" attributeType="Transformable" customClassName="NSArray"/>
+        <attribute name="stillSizes" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="NSArray"/>
     </entity>
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
