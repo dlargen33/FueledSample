@@ -35,10 +35,7 @@ struct MoviesContentView: View {
                                                                            renderingMode: .alwaysOriginal)
         appearance.setBackIndicatorImage(image, transitionMaskImage: image)
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 18 / 255,
-                                             green: 34 / 255,
-                                             blue: 46 / 255,
-                                             alpha: 1)
+        appearance.backgroundColor = UIColor(named: "BackgroundColor")
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
     
@@ -52,7 +49,7 @@ struct MoviesContentView: View {
             movieListView()
                 .navigationDestination(for: Page.self) { page in
                     if case .movieDetail(let movie) = page {
-                        MovieDetailView()
+                        MovieDetailView(movie: movie)
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)

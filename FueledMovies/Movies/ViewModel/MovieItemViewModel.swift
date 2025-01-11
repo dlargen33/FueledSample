@@ -29,10 +29,26 @@ class MovieItemViewModel: ObservableObject {
         return movie.title
     }
     
-    func loadImage() async {
+    var overview: String {
+        return movie.overview
+    }
+    
+    func loadLogoImage() async {
         let movieService = MovieService()
         do {
             movieImage = try await movieService.getLogoImage(for: movie)
+            imageDownloadState = .complete
+        }
+        catch {
+            print("Failed to download image with error: \(error.localizedDescription)")
+            imageDownloadState = .failed
+        }
+    }
+    
+    func loadPosterImage() async {
+        let movieService = MovieService()
+        do {
+            movieImage = try await movieService.getPosterImage(for: movie)
             imageDownloadState = .complete
         }
         catch {
