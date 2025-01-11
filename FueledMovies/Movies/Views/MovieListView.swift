@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MovieListView: View {
     @State private var selectedFilter: MovieFilter = .popular
     @StateObject private var viewModel: MoviesViewModel = MoviesViewModel()
+    var onMovieSelected: (Movie) -> ()
     
     var body: some View {
         ZStack {
@@ -25,7 +27,10 @@ struct MovieListView: View {
             
             VStack {
                 FilterBarView(selected: $selectedFilter)
-                MoviesView(viewModel: viewModel)
+                MoviesView(viewModel: viewModel) { selectedMovie in
+                    print("Selected Movie \(selectedMovie.title)")
+                    onMovieSelected(selectedMovie)
+                }
                 Spacer()
             }
         }
@@ -43,7 +48,6 @@ struct MovieListView: View {
 
 struct FilterBarView: View {
     @Binding var selected: MovieFilter
-    
     var body: some View {
         HStack {
             FilterButton(title: "Most Popular",
@@ -86,18 +90,46 @@ struct FilterButton: View {
 }
 
 struct MovieItemView: View {
-    let movie: Movie
+    
+    @StateObject private var viewModel: MovieItemViewModel
     let action: () -> Void
+    
+    init(movie: Movie, action: @escaping () -> Void ) {
+        _viewModel = StateObject(wrappedValue: MovieItemViewModel(movie: movie))
+        self.action = action
+    }
     
     var body: some View {
         Button(action: action) {
             VStack {
-                Rectangle()
-                    .fill(Color.blue)
-                    .frame(height: 150)
-                    .cornerRadius(8)
+                switch viewModel.imageDownloadState {
+                case .downloading:
+                    ZStack {
+                        Rectangle()
+                            .fill(Color.blue)
+                            .frame(height: 150)
+                            .cornerRadius(8)
+                        ProgressView("Loading...")
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(0.75)
+                            .tint(.white)
+                            .foregroundColor(.white)
+                    }
+                   
+                case .complete:
+                    Image(uiImage: viewModel.movieImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 150)
+                        .cornerRadius(8)
+                case .failed:
+                    Rectangle()
+                        .fill(Color.blue)
+                        .frame(height: 150)
+                        .cornerRadius(8)
+                }
                 
-                Text(movie.title)
+                Text(viewModel.title)
                     .font(.system(size: 14,
                                   weight: .semibold,
                                   design: .rounded))
@@ -110,16 +142,21 @@ struct MovieItemView: View {
         }
         .frame(width: 100)
         .padding(.bottom, 5)
+        .task {
+            await viewModel.loadImage()
+        }
     }
 }
 
 #Preview {
-    MovieListView()
+    MovieListView { selected in
+        print("Selected movie \(selected.title)")
+    }
 }
-
 
 struct MoviesView: View {
     @ObservedObject var viewModel: MoviesViewModel
+    var onMovieSelected: (Movie) -> Void
     
     private let columns = [GridItem(.flexible()),
                            GridItem(.flexible()),
@@ -130,7 +167,7 @@ struct MoviesView: View {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(viewModel.movieList) { movie in
                     MovieItemView(movie: movie) {
-                        print("Button with movie \(movie.title) touched")
+                        onMovieSelected(movie)
                     }
                 }
             }

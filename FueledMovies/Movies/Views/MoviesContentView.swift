@@ -6,19 +6,21 @@
 //
 
 import SwiftUI
+import Combine
+
+enum Page: Identifiable, Hashable {
+    case movieDetail(Movie)
+    
+    var id: String {
+        switch self {
+        case .movieDetail(_): "movieDetail"
+        }
+    }
+}
 
 struct MoviesContentView: View {
     @State private var path = NavigationPath()
     
-    enum Page: Identifiable, Hashable {
-        case movieDetail(Movie)
-        
-        var id: String {
-            switch self {
-            case .movieDetail(_): "movieDetail"
-            }
-        }
-    }
     init() {
         UINavigationBar.appearance().tintColor = .white
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
@@ -47,7 +49,7 @@ struct MoviesContentView: View {
     
     var body: some View {
         NavigationStack(path: $path){
-            MovieListView()
+            movieListView()
                 .navigationDestination(for: Page.self) { page in
                     if case .movieDetail(let movie) = page {
                         MovieDetailView()
@@ -55,6 +57,13 @@ struct MoviesContentView: View {
                 }
                 .navigationBarTitleDisplayMode(.inline)
         }
+    }
+    
+    private func movieListView() -> MovieListView {
+        let view = MovieListView { selectedMovie in
+            path.append(Page.movieDetail(selectedMovie))
+        }
+        return view
     }
 }
 

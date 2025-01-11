@@ -116,8 +116,8 @@ class AsyncSession: NSObject {
     }
     
     func download (_ path: String,
-                   parameters: Any?,
-                   progress: AsyncSessionProgress?) async throws -> Data {
+                   parameters: Any? = nil,
+                   progress: AsyncSessionProgress? = nil) async throws -> Data {
         progressHandler = progress
             
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
@@ -157,16 +157,28 @@ class AsyncSession: NSObject {
 
 extension AsyncSession {
     private func composedURL(_ path: String) -> URL? {
-        // path may be a fully qualified URL string - check for that
-        if let precomposed = URL(string: path) {
-            if precomposed.scheme != nil && precomposed.host != nil {
-                return precomposed
-            }
+        if let precomposed = URL(string: path),
+           precomposed.scheme != nil,
+           precomposed.host != nil {
+            return precomposed
+        }
+
+
+        guard let scheme = sessionConfiguration.scheme.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed),
+              let host = sessionConfiguration.host.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
+            return nil
+        }
+
+        let baseURLString = "\(scheme)://\(host)"
+        guard let baseURL = URL(string: baseURLString) else {
+            return nil
+        }
+
+        guard let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            return nil
         }
         
-        let urlString = sessionConfiguration.scheme + "://" + sessionConfiguration.host
-        guard let url = URL(string: urlString) else { return nil }
-        return url.appendingPathComponent(path)
+        return baseURL.appendingPathComponent(encodedPath)
     }
     
     private func setupRequest(path: String,
@@ -182,7 +194,6 @@ extension AsyncSession {
                 userInfo: [NSURLErrorFailingURLStringErrorKey: path])
         }
         
-
         let request = try URLRequest(url: url,
                                      cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
                                      timeoutInterval: sessionConfiguration.timeout ?? 60.0,

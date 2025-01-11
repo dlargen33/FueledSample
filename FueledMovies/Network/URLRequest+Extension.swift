@@ -40,7 +40,7 @@ extension URLRequest {
             self.addValue(accept, forHTTPHeaderField: "Accept")
         }
         
-        if let authKey =  authorizationHeaderKey {
+        if let authKey = authorizationHeaderKey {
             if let authValue = authorizationHeaderValue {
                 self.setValue(authValue, forHTTPHeaderField: authKey)
             }

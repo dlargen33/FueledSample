@@ -35,10 +35,9 @@ final class FueledMoviesTests: XCTestCase {
         let asyncSession = AsyncSession(sessionConfiguration: sessionConfig)
         let params = ["foo": "bar"]
         
-        let getResult: GetResult = try await asyncSession.get(
-            path: "get",
-            parameters: params,
-            dateFormatters: [])
+        let getResult: GetResult = try await asyncSession.get(path: "get",
+                                                              parameters: params,
+                                                              dateFormatters: [])
         
         guard getResult.args["foo"] == "bar" else {
             XCTFail()

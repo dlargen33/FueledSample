@@ -20,6 +20,34 @@ class ConfigurationRepository {
         PersistenceController.shared.container.newBackgroundContext()
     }
     
+    func getConfiguration() -> Configuration? {
+        let context = newBackgroundContext()
+        return context.performAndWait { () -> Configuration? in
+            do {
+                let fetchRequest = NSFetchRequest<ConfigurationEntity>(entityName: "ConfigurationEntity")
+                fetchRequest.fetchLimit = 1
+                guard let configEntity = try context.fetch(fetchRequest).first,
+                      let imageEntity = configEntity.images else { return nil }
+                
+                let images = Images(baseUrl: imageEntity.baseUrl ?? "",
+                                    secureBaseUrl: imageEntity.secureBaseUrl ?? "",
+                                    backdropSizes: imageEntity.backdropSizes?.toArray() ?? [],
+                                    logoSizes: imageEntity.logoSizes?.toArray() ?? [],
+                                    posterSizes: imageEntity.posterSizes?.toArray() ?? [],
+                                    profileSizes: imageEntity.profileSizes?.toArray() ?? [],
+                                    stillSizes: imageEntity.stillSizes?.toArray() ?? [])
+                
+                let configuration = Configuration(changeKeys: configEntity.changeKeys?.toArray() ?? [],
+                                                  images: images)
+                return configuration
+            }
+            catch {
+                print("Error while fetching configuration \(error)")
+                return nil
+            }
+        }
+    }
+    
     @discardableResult
     func add(configuration: Configuration) -> Bool {
         let context = newBackgroundContext()
