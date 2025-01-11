@@ -39,7 +39,7 @@ struct FilterButton: View {
     var body: some View {
         Button(action: onTapped) {
             Text(title)
-                .padding(.horizontal, 15)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 10)
                 .background(isSelected ? .white : baseColor)
                 .foregroundColor(isSelected ? baseColor : .white)
