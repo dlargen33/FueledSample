@@ -8,6 +8,10 @@
 import SwiftUI
 import Combine
 
+/*
+ Main view of the application. Sets up the navigation stack and manages the navigation path
+ */
+
 enum Page: Identifiable, Hashable {
     case movieDetail(Movie)
     

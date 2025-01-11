@@ -7,6 +7,10 @@
 
 import Foundation
 
+/*
+ Defines what a FueledService looks like.  Provides default implementation to create a configuration need
+ for the Network Session.
+ */
 protocol FueledService {
     func createSessionConfiguration() -> AsyncSession.SessionConfiguration
 }

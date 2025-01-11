@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+/*
+ Application class.  Manages the application start up.  Here a configuration is downloaded that is needed to make request to
+ The Movie DB.  
+ */
 @main
 struct FueledMoviesApp: App {
     let persistenceController = PersistenceController.shared

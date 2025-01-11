@@ -8,6 +8,9 @@
 import Foundation
 import CoreData
 
+/*
+ ConfigurationRepository provides access to Configuration Data stored in Core Data.
+*/
 
 class ConfigurationRepository {
     static let shared = ConfigurationRepository()

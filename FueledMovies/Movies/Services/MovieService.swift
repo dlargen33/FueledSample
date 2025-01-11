@@ -8,6 +8,11 @@
 import Foundation
 import UIKit
 
+
+/*
+ Movie Service provides functionality to pull fetch movie titles from The Movie DB API service and
+ the ability to fetch images related to the movie. 
+ */
 extension MovieFilter {
     var route: String {
         switch self {

@@ -7,7 +7,11 @@
 
 import Foundation
 import SwiftUI
-
+/*
+ Displays a list of movies based on what filter is selected. MoviesViewModel manages the movies.
+ It is a ObserverdObject becasue the containing view houses the filter bar.  When a filter is selected
+ it triggers a call to fetch the appropriate titles.
+ */
 struct MoviesView: View {
     @ObservedObject var viewModel: MoviesViewModel
     var onMovieSelected: (Movie) -> Void
@@ -30,6 +34,10 @@ struct MoviesView: View {
     }
 }
 
+/*
+ An item to show in the list.  MovieItemVieModel manages the item and also
+ provides the ability to fetch the movie poster to display
+ */
 struct MovieItemView: View {
     @StateObject private var viewModel: MovieItemViewModel
     let action: () -> Void

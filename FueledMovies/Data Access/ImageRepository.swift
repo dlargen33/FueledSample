@@ -8,6 +8,10 @@
 import Foundation
 import CoreData
 
+/*
+ ImageRepository provides access to Image Data stored in Core Data.
+*/
+
 class ImageRepository {
     
     static let shared = ImageRepository()

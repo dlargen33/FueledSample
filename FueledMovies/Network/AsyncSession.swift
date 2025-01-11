@@ -12,6 +12,12 @@ typealias AsyncSessionProgress = (_ bytesWritten: Int64,
                                   _ totalBytesExpectedToWrite: Int64,
                                   _ percentComplete: Double?) -> Void
 
+/*
+ Main network class.  Used to execute Get requests and the provides the ability to Download binary data.
+ Other verbs can be added, Put, Patch, Delete.
+ 
+ Class utilizes Swift Concurrency.  Specifically the async api exposed by URLSession. 
+ */
 class AsyncSession: NSObject {
     
     enum QueryParameterPlusEncodingBehavior {

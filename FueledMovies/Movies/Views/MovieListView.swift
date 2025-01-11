@@ -8,6 +8,9 @@
 import SwiftUI
 import Combine
 
+/*
+ Container view.  Manages the FilterBar and Movies that are displayed in the list.
+ */
 struct MovieListView: View {
     @State private var selectedFilter: MovieFilter = .popular
     @StateObject private var viewModel: MoviesViewModel = MoviesViewModel()
@@ -21,8 +24,7 @@ struct MovieListView: View {
                     Color(red: 18 / 255, green: 34 / 255, blue: 46 / 255),
                     Color(red: 24 / 255, green: 40 / 255, blue: 54 / 255)]),
                 startPoint: .top,
-                endPoint: .bottom
-            )
+                endPoint: .bottom)
             .ignoresSafeArea()
             
             VStack {
