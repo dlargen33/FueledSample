@@ -3,9 +3,9 @@ Overview
 - This sample application leverages The Movie Database (TMDB) API to fetch a list of movie titles along with their corresponding images. The movies are displayed in a grid layout, and selecting a movie navigates the user to a detailed screen with additional information about the selected title.
 
 The FueledMovies application demonstrates the following key concepts:
-	•	UI Composition: Built using SwiftUI.
-	•	Data Persistence: Utilizes CoreData to manage persistent storage, caching configuration data and movie images after they are retrieved.
-	•	Networking Integration: Implements REST API communication with a custom AsyncSession class using Swift concurrency.
+- UI Composition: Built using SwiftUI.
+- Data Persistence: Utilizes CoreData to manage persistent storage, caching configuration data and movie images after they are retrieved.
+- Networking Integration: Implements REST API communication with a custom AsyncSession class using Swift concurrency.
 
 Application Overview
 	1. App Initialization (FueledMoviesApp.swift)
