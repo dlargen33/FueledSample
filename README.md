@@ -35,7 +35,7 @@ Application Overview
 - ConfigurationRepository (ConfigurationRepository.swift) provides operations to add and fetch the current configuration from Core Data.
 - ImageReposity (ImageRespository.swift) provides operation to add and fetch image data from Core Data
 
-What to Look For
+## What to Look For
 - MVVM Architecture: The project follows the Model-View-ViewModel (MVVM) design pattern, ensuring a clear separation of concerns. The ViewModel layer handles business logic and state management, making the SwiftUI views simpler and more focused on UI composition.
 - SwiftUI Integration: The app demonstrates seamless integration of SwiftUI with MVVM, leveraging features like data binding and environment injection to create a reactive and maintainable UI.
 - Service Layer (Domains) and ViewModel Synergy: The ViewModel interacts with Services, ensuring efficient caching and retrieval of configuration and movie data.
