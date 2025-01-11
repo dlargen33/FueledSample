@@ -1,5 +1,5 @@
 # Fueled Movies: A Sample iOS Application
-![Movie ListScreenshot](MovieList.png)
+<img src="MovieList.png" alt="Movie List Screenshot" width="400">
 
 ## Overview
 - This sample application leverages The Movie Database (TMDB) API to fetch a list of movie titles along with their corresponding images. The movies are displayed in a grid layout, and selecting a movie navigates the user to a detailed screen with additional information about the selected title.
