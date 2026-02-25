@@ -23,7 +23,6 @@ extension FueledService {
             authorizationHeaderKey: nil,
             authorizationHeaderValue: nil,
             headers: nil,
-            isWrittingDisabled: false,
             timeout: 60,
             decodingStrategy: .convertFromSnakeCase,
             apiKey: ["api_key": "e511ff224223cc84890762dcf623613c"])

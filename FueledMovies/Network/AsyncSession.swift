@@ -40,8 +40,6 @@ class AsyncSession: NSObject {
         var headers: [String: String]?
         var isWrittingDisabled: Bool?
         var timeout: Double?
-        var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior
-        var allowsLongRunningTasks: Bool
         var decodingStrategy: JSONDecoder.KeyDecodingStrategy
         var apiKey: [String: String]?
         
@@ -50,10 +48,7 @@ class AsyncSession: NSObject {
              authorizationHeaderKey: String?,
              authorizationHeaderValue: String?,
              headers: [String: String]?,
-             isWrittingDisabled: Bool?,
              timeout: Double?,
-             queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default,
-             allowsLongRunningTasks: Bool = false,
              decodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
              apiKey: [String: String]? = nil) {
             self.scheme = scheme
@@ -61,10 +56,7 @@ class AsyncSession: NSObject {
             self.authorizationHeaderKey = authorizationHeaderKey
             self.authorizationHeaderValue = authorizationHeaderValue
             self.headers = headers
-            self.isWrittingDisabled = isWrittingDisabled
             self.timeout = timeout
-            self.queryParameterPlusEncodingBehavior = queryParameterPlusEncodingBehavior
-            self.allowsLongRunningTasks = allowsLongRunningTasks
             self.decodingStrategy = decodingStrategy
             self.apiKey = apiKey
         }
